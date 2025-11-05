@@ -24,3 +24,20 @@ export async function createTask(formData: FormData) {
         return {success: false};
     }
 }
+
+export async function updateTask(formData: FormData) {
+  try {
+    const id = formData.get('id');
+    const title = formData.get('title');
+    const description = formData.get('description');
+
+    if (!id) throw new Error('Task ID is required');
+
+    const { data } = await API.put(`/tasks/${id}`, { title, description });
+    revalidatePath('/');
+    return { success: true, task: data };
+  } catch (error) {
+    console.error('Error updating task:', error);
+    return { success: false };
+  }
+}

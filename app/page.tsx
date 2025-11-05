@@ -1,4 +1,4 @@
-import { getTasks, createTask } from './actions/tasks';
+import { getTasks, createTask, updateTask } from './actions/tasks';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -6,6 +6,11 @@ export default async function Home() {
   async function handleSubmit(formData: FormData) {
     'use server';
     await createTask(formData);
+  }
+
+  async function handlUpdate(formData: FormData) {
+    'use server';
+    await updateTask(formData);
   }
 
   return (
@@ -35,13 +40,36 @@ export default async function Home() {
         </button>
       </form>
 
-      <ul className="mt-4">
+      <ul className="space-y-4">
         {tasks.map((t: {id: number; title: string; description: string}) => (
           <li key={t.id} className="border-b py-1">
+            <form action={handlUpdate}>
+            <input type="hidden" name="id" value={t.id.toString()} />
             <h3 className='font-bold'>{t.title}</h3>
            <p>{t.description}</p> 
+
+                <input
+                name="title"
+                defaultValue={t.title}
+                className="border p-2 "
+              />
+
+              <textarea
+                name="description"
+                defaultValue={t.description}
+                className="border p-2 mt-2"
+              />
+
+           <button
+                type="submit"
+                className="ml-2 bg-blue-500 text-white p-2 rounded"
+              >
+                editar
+              </button>
+              </form>
           </li>
         ))}
+        
       </ul>
     </main>
   );

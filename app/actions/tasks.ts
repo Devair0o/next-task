@@ -20,7 +20,7 @@ export async function createTask(formData: FormData) {
   revalidatePath('/');
   return { success: true, task:data };
     } catch (error) {
-        console.error('Error creating task', error);
+        console.error('Error a criar a task', error);
         return {success: false};
     }
 }
@@ -37,7 +37,24 @@ export async function updateTask(formData: FormData) {
     revalidatePath('/');
     return { success: true, task: data };
   } catch (error) {
-    console.error('Error updating task:', error);
+    console.error('Error ao editar a task:', error);
     return { success: false };
   }
+}
+
+  export async function deleteTaskById (formData : FormData) {
+  try {
+    const id = formData.get('id');
+
+    if (!id) throw new Error('Task ID is required');
+
+    await API.delete(`/tasks/${id}`);
+    revalidatePath('/');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error ao deletar a task:', error);
+    return { success: false };
+  }
+    
 }

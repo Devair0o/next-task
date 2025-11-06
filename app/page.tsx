@@ -1,4 +1,4 @@
-import { getTasks, createTask, updateTask } from './actions/tasks';
+import { getTasks, createTask, updateTask, deleteTaskById } from './actions/tasks';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -13,32 +13,39 @@ export default async function Home() {
     await updateTask(formData);
   }
 
+  async function handleDelete(formData: FormData) {
+    'use server';
+    await deleteTaskById(formData);
+  }
+
+
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold">📝 Lista de Tarefas</h1>
+      <h1 className="text-2xl font-bold">Lista de Tarefas</h1>
+      <div className='d-flex'>
+        <form action={handleSubmit} className="my-4 flex w-full ">
+          <input
+            name="title"
+            placeholder="Nova tarefa"
+            required
+            className="border p-2 mt-4 mr-2"
+          />
 
-      <form action={handleSubmit} className="my-4">
-        <input
-          name="title"
-          placeholder="Nova tarefa"
+          <textarea 
+          name="description"
+          placeholder="Descrição da tarefa"
           required
-          className="border p-2"
-        />
+          className='border p-2 mt-4 ml-2'
+          ></textarea>
 
-        <textarea 
-         name="description"
-         placeholder="Descrição da tarefa"
-         required
-         className='border p-2 mt-2'
-         ></textarea>
-
-        <button
-          type="submit"
-          className="ml-2 bg-blue-500 text-white p-2 rounded"
-        >
-          Adicionar
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="ml-2 bg-blue-500 text-white p-2 rounded"
+          >
+            Adicionar
+          </button>
+        </form>
+      </div>
 
       <ul className="space-y-4">
         {tasks.map((t: {id: number; title: string; description: string}) => (
@@ -67,6 +74,20 @@ export default async function Home() {
                 editar
               </button>
               </form>
+
+              
+
+              <form action={handleDelete}>
+            <input type="hidden" name="id" value={t.id.toString()} />
+            <button
+              type="submit"
+              className="ml-1 bg-blue-500 text-white p-2 rounded "
+            >
+              Delete
+            </button>
+          </form>
+            
+
           </li>
         ))}
         

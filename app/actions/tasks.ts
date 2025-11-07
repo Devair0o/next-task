@@ -1,28 +1,28 @@
 'use server';
 
-import API  from '@/lib/API';
+import API from '@/lib/API';
 import { revalidatePath } from 'next/cache';
 
 export async function getTasks() {
-try{
-  const { data } = await API.get('/tasks');
-return data;
-} catch (error){
+  try {
+    const { data } = await API.get('/tasks');
+    return data;
+  } catch (error) {
     console.error('Error fetching tasks:', error);
-}
+  }
 }
 
 export async function createTask(formData: FormData) {
-    try{
-  const title = formData.get('title');
-  const description = formData.get('description');
-  const { data } = await API.post('/tasks', { title, description });
-  revalidatePath('/');
-  return { success: true, task:data };
-    } catch (error) {
-        console.error('Error a criar a task', error);
-        return {success: false};
-    }
+  try {
+    const title = formData.get('title');
+    const description = formData.get('description');
+    const { data } = await API.post('/tasks', { title, description });
+    revalidatePath('/');
+    return { success: true, task: data };
+  } catch (error) {
+    console.error('Error a criar a task', error);
+    return { success: false };
+  }
 }
 
 export async function updateTask(formData: FormData) {
@@ -42,7 +42,7 @@ export async function updateTask(formData: FormData) {
   }
 }
 
-  export async function deleteTaskById (formData : FormData) {
+export async function deleteTaskById(formData: FormData) {
   try {
     const id = formData.get('id');
 
@@ -56,5 +56,22 @@ export async function updateTask(formData: FormData) {
     console.error('Error ao deletar a task:', error);
     return { success: false };
   }
-    
+
+}
+
+export async function completedTask(formData: FormData) {
+  try {
+    const id = formData.get('id');
+    const completed = formData.get('completed');
+
+    if (!id) throw new Error('Task ID é required');
+    if (completed === null) throw new Error('Completed value is required');
+
+    const { data } = await API.patch(`/tasks/${id}`, { completed });
+    revalidatePath('/');
+    return { success: true, task: data };
+  } catch (error) {
+    console.error('Erro ao atualizar status da task:', error);
+    return { success: false };
+  }
 }
